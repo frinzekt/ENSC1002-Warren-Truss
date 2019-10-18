@@ -67,8 +67,9 @@ def drawEachMember(memberNames, members, Fmax):
             break
 
     break_y_val = members[breakage[0]][1]
-    plt.annotate("BREAKING OF CRITICAL MEMBER", (break_x_val,
-                                                 break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
+
+    plt.annotate("First Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
+                                                                                                                  break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
     # FIND INTERSECTION
     plt.savefig("a.png")
     plt.show()
@@ -79,11 +80,12 @@ def drawEachMember(memberNames, members, Fmax):
 """
 # %%
 # Definition of Members and Forces [m,c]
-RA = np.array([X_LL, F_DL * X_DL]) / (X_LENGTH*8)
-print("RA", RA)
+RI = np.array([X_LL, F_DL * X_DL]) / (X_LENGTH*8)
 
-RI = np.array([F_DL, 1])
-RI = RI - RA
+RA = np.array([1, F_DL])
+RA = RA - RI
+
+print("RA", RA)
 print("RI", RI)
 
 # Tensile Strength 70 MPa * 2 mm^2
