@@ -1,6 +1,6 @@
 # %%[markdown]
 """# Warren Truss Calculation
-### By Frinze
+# By Frinze
 """
 """### Import Modules and Dimension Definitions
 """
@@ -121,7 +121,7 @@ EF = 5 * RA - np.array([1.0, 40.0])
 FN = np.zeros((2))
 FG = 5 * RA - np.array([1.0, 40.0])
 
-NG = (RA - np.array([0.0, 20.0])) / np.sin(ANGLE)
+NG = (RA - np.array([1, 20.0])) / np.sin(ANGLE)
 NO = -6 * RA + np.array([2.0, 60.0])
 
 OG = np.zeros((2))
@@ -133,7 +133,9 @@ GH = 7 * RA - np.array([3.0, 80.0])
 HP = np.zeros((2))
 HI = 7 * RA - np.array([3.0, 80.0])
 
-PI = (RA - np.array([0.0, 20.0])) / np.sin(ANGLE)
+PI = (RA - np.array([1, 20.0])) / np.sin(ANGLE)
+calc = (-RA + np.array([1, DL]))
+print("CALC", calc)
 # %%[markdown]
 """### Graphing
 """
@@ -143,7 +145,8 @@ memberNames = np.array(["AJ", 'AB', 'BJ', 'BC', 'JC', 'JK', 'KC', 'KL', 'CL', 'C
                         'LM', 'ME', 'MN', 'EN', 'FN', 'FG', 'NG', 'NO', 'OG', 'OP', 'GP', 'GH', 'HP', 'HI', 'PI'])
 members = np.array([AJ, AB, BJ, BC, JC, JK, KC, KL, CL, CD, DL, DE, LE,
                     LM, ME, MN, EN, FN, FG, NG, NO, OG, OP, GP, GH, HP, HI, PI])
-
+for i in zip(memberNames, members):
+    print(i)
 print("SUM OF MEMBERS", members.sum())
 uniqueMembers, index, dup_correspond_index = np.unique(
     members, axis=0, return_index=True, return_inverse=True)
