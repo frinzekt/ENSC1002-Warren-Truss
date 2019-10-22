@@ -28,48 +28,69 @@ def drawLine(m, c, header, color):  # y = mx + c
     y = m * x + c
     plt.plot(x, y, label=header+" - y= "+str(np.round(m, OUT_ROUND)
                                              )+"x + "+str(np.round(c, OUT_ROUND)), c=color)
-    plt.annotate(header, xy=(99, y[99*10-1]), xytext=(30, 0), color=color,
-                 textcoords="offset points",
-                 size=14, va="center")
+    # plt.annotate(header, xy=(99, y[99*10-1]), xytext=(30, 0), color=color,
+    #              textcoords="offset points",
+    #              size=14, va="center")
     plt.xlim([0, 100])
-    plt.ylim([-220, 220])
+    plt.ylim([-30, 200])
     plt.legend(loc="upper left", bbox_to_anchor=(0, 1))
 
     # plt.savefig(header + ".png")
 
 
-def drawEachMember(memberNames, members, Fmax):
+def drawEachMember(memberNames, members, Fmax, FBreak):
     plt.figure(figsize=(20, 10))
-    plt.title("Forces of each Member")
+    plt.title("Members in Tension With Varying Live Load")
     plt.ylabel("Force Experience (N)")
     plt.xlabel("Live Load (N)")
     plt.grid(True, which="both")
 
-    color = iter(cm.rainbow(np.linspace(0, 1, len(memberNames))))
+   # NoOfTensionMembers = len((np.where(members[:, 0]) > 0)[0])
+    NoOfTensionMembers = 7
+    color = iter(cm.rainbow(np.linspace(0, 1, NoOfTensionMembers)))
     for i in range(len(memberNames)):
-        c = next(color)
-        drawLine(members[i][0], members[i][1], memberNames[i], c)
+        if((members[i][0] > 0)):
+            c = next(color)
+            drawLine(members[i][0], members[i][1], memberNames[i], c)
 
-    drawLine(0, Fmax, "BREAKING POINT", 'w')
-    drawLine(0, -Fmax, "BREAKING POINT", 'w')
+    drawLine(0, Fmax, "BREAKING POINT", 'k')
+    drawLine(0, FBreak, "ACTUAL BREAKING POINT", 'k')
+    #drawLine(0, -Fmax, "BREAKING POINT", 'w')
 
     # Simulation of First Break
-    current = members[:, 1]
+    dup = np.matrix.copy(members, 'K')
+    current = dup[:, 1]
     break_x_val = 0
     MULTI_INCREMENT = 0.1
-    print(members)
-    print(members[:, 1])
     while (True):  # Do while
-        current += MULTI_INCREMENT * members[:, 0]
-        break_x_val += MULTI_INCREMENT
-        breakage = np.where(abs(current) >= Fmax)[0]
+        current += MULTI_INCREMENT * dup[:, 0]
+        breakage = np.where(current > Fmax)[0]
         if (len(breakage) != 0):
             break
 
-    break_y_val = members[breakage[0]][1]
+        break_x_val += MULTI_INCREMENT
 
+    break_y_val = dup[breakage[0]][1]
     plt.annotate("First Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
                                                                                                                   break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
+
+    # Actual First Break
+    # Simulation of First Break
+    dup = np.matrix.copy(members, 'K')
+    current = dup[:, 1]
+    break_x_val = 0
+    MULTI_INCREMENT = 0.1
+    while (True):  # Do while
+        current += MULTI_INCREMENT * dup[:, 0]
+        break_x_val += MULTI_INCREMENT
+        breakage = np.where(current > FBreak)[0]
+        if (len(breakage) != 0):
+            break
+
+    break_y_val = dup[breakage[0]][1]
+    plt.annotate("First Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
+                                                                                                                  break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
+
     # FIND INTERSECTION
     plt.savefig("a.png")
     plt.show()
@@ -91,6 +112,9 @@ print("RI", RI)
 # Tensile Strength 70 MPa * 2 mm^2
 Fmax = 140
 
+# Actual Value
+TS_actual = 85
+FBreak = TS_actual * 2
 
 # Member Definition
 AJ = -RA / np.sin(ANGLE)
@@ -144,9 +168,9 @@ print("CALC", calc)
 
 # %%
 memberNames = np.array(["AJ", 'AB', 'BJ', 'BC', 'JC', 'JK', 'KC', 'KL', 'CL', 'CD', 'DL', 'DE', 'LE',
-                        'LM', 'ME', 'MN', 'EN', 'FN', 'FG', 'NG', 'NO', 'OG', 'OP', 'GP', 'GH', 'HP', 'HI', 'PI'])
+                        'LM', 'ME', 'MN', 'EN', 'EF', 'FN', 'FG', 'NG', 'NO', 'OG', 'OP', 'GP', 'GH', 'HP', 'HI', 'PI'])
 members = np.array([AJ, AB, BJ, BC, JC, JK, KC, KL, CL, CD, DL, DE, LE,
-                    LM, ME, MN, EN, FN, FG, NG, NO, OG, OP, GP, GH, HP, HI, PI])
+                    LM, ME, MN, EN, EF, FN, FG, NG, NO, OG, OP, GP, GH, HP, HI, PI])
 for i in zip(memberNames, members):
     print(i)
 print("SUM OF MEMBERS", members.sum())
@@ -159,5 +183,5 @@ for i, j in enumerate(dup_correspond_index):  # Append Non-Unique to Existing
     if(uniqueMemberNames[j] != memberNames[i]):
         uniqueMemberNames[j] += "," + memberNames[i]
 
-drawEachMember(uniqueMemberNames, members[index], Fmax)
+drawEachMember(uniqueMemberNames, members[index], Fmax, FBreak)
 # %%
