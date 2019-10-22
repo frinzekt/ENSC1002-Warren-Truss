@@ -28,6 +28,7 @@ def drawLine(m, c, header, color):  # y = mx + c
     y = m * x + c
     plt.plot(x, y, label=header+" - y= "+str(np.round(m, OUT_ROUND)
                                              )+"x + "+str(np.round(c, OUT_ROUND)), c=color)
+
     # plt.annotate(header, xy=(99, y[99*10-1]), xytext=(30, 0), color=color,
     #              textcoords="offset points",
     #              size=14, va="center")
@@ -61,35 +62,34 @@ def drawEachMember(memberNames, members, Fmax, FBreak):
     dup = np.matrix.copy(members, 'K')
     current = dup[:, 1]
     break_x_val = 0
-    MULTI_INCREMENT = 0.1
+    MULTI_INCREMENT = 0.001
     while (True):  # Do while
         current += MULTI_INCREMENT * dup[:, 0]
-        breakage = np.where(current > Fmax)[0]
+        breakage = np.where(current >= Fmax)[0]
         if (len(breakage) != 0):
             break
-
         break_x_val += MULTI_INCREMENT
 
     break_y_val = dup[breakage[0]][1]
-    plt.annotate("First Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
-                                                                                                                  break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
+    plt.annotate("First(Expected) Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
+                                                                                                                            break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
 
     # Actual First Break
     # Simulation of First Break
     dup = np.matrix.copy(members, 'K')
     current = dup[:, 1]
     break_x_val = 0
-    MULTI_INCREMENT = 0.1
+    MULTI_INCREMENT = 0.001
     while (True):  # Do while
         current += MULTI_INCREMENT * dup[:, 0]
         break_x_val += MULTI_INCREMENT
-        breakage = np.where(current > FBreak)[0]
+        breakage = np.where(current >= FBreak)[0]
         if (len(breakage) != 0):
             break
 
     break_y_val = dup[breakage[0]][1]
-    plt.annotate("First Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
-                                                                                                                  break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
+    plt.annotate("First (Actual) Break at \n (" + str(np.round(break_x_val, 2)) + ", "+str(np.round(break_y_val, 2))+")", (break_x_val,
+                                                                                                                           break_y_val), xytext=(50, 50), textcoords='offset points', arrowprops=dict(facecolor='white', shrink=0.05))
 
     # FIND INTERSECTION
     plt.savefig("a.png")
